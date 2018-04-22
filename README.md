@@ -15,3 +15,7 @@ To do:
 - Bypass login captcha
 - Solve memory leak problem
 - Save and store image on external file/SQL database to speed up process.
+
+How to run:
+- go to folder/directory
+- python main.py
