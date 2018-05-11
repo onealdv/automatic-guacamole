@@ -1,15 +1,12 @@
 # Things to do:
-# - automatically update
 # - do something about PO products (write name with (PO) and use fixed price)
-# - do something about products that are ready stock(include ready stock and add 'ready' tag)
+# - divide prodlist to multiple 1000 lists.
+# - store stadium goods images to external file
 
-#fix imgpos
-#fix getimg url
 
 
 import requests
 from bs4 import BeautifulSoup
-#import pandas as pd
 import numpy as np
 import math
 import csv
@@ -28,76 +25,42 @@ import pprint
 import re
 from datetime import datetime
 
-urllist = []
 
-
-
-skulist = []
-imglist = []
-imgpos = []
-stockximg = []
-namekey = []
-sizelist = []
-pricelist = []
-emptylist = []
-bodylist = [ ]
-vendorlist = []
-publishlist = []
-option1name = []
-variantgrams = []
-varianttrack = []
-variantqty = [ ]
-variantpolicy = []
-variantfull = []
-variantreq = []
-varianttax = []
-variantweight = []
-giftcardlist = []
-handlelist = []
-titlelist = []
-taglist = []
-lendict = {}
-htmllist = []
-imgdict = {}
-sghtml = []
-stockxdict = {}
 
 def geturl():
-    #alist= ['https://stockx.com/adidas/most-popular','https://stockx.com/nike/basketball','https://stockx.com/nike/footwear','https://stockx.com/nike/lebron','https://stockx.com/nike/air-force','https://stockx.com/nike/kobe','https://stockx.com/nike/foamposite','https://stockx.com/nike/sb','https://stockx.com/adidas','https://stockx.com/retro-jordans','https://stockx.com/retro-jordans/most-popular','https://stockx.com/nike','https://stockx.com/nike/most-popular','https://stockx.com/nike/top-selling','https://stockx.com/other-sneakers/most-popular','https://stockx.com/supreme/accessories/most-popular','https://stockx.com/supreme/accessories','https://stockx.com/supreme/headwear','https://stockx.com/supreme/headwear/most-popular','https://stockx.com/supreme/headwear/most-expensive']
-    #alist= ['https://stockx.com/retro-jordans/packs',https://stockx.com/sneakers/most-popular',https://stockx.com/kith/t-shirts/highest-bid','https://stockx.com/kith/t-shirts/lowest-ask','https://stockx.com/kith/t-shirts/price-premium','https://stockx.com/kith/t-shirts/most-expensive','https://stockx.com/kith/t-shirts/most-popular','https://stockx.com/kith/t-shirts','https://stockx.com/supreme/jackets/price-premium','https://stockx.com/kith/jackets','https://stockx.com/kith/bottoms/most-expensive','https://stockx.com/kith/bottoms','https://stockx.com/supreme/t-shirts/highest-bid','https://stockx.com/supreme/t-shirts/price-premium','https://stockx.com/supreme/t-shirts/top-selling','https://stockx.com/supreme/t-shirts/most-expensive','https://stockx.com/supreme/t-shirts/most-popular','https://stockx.com/supreme/t-shirts','https://stockx.com/supreme/bags/most-expensive','https://stockx.com/supreme/bags','https://stockx.com/supreme/sweatshirts/top-selling','https://stockx.com/supreme/sweatshirts/most-expensive','https://stockx.com/supreme/sweatshirts/price-premium','https://stockx.com/supreme/sweatshirts','https://stockx.com/supreme/jackets/most-expensive','https://stockx.com/supreme/jackets','https://stockx.com/supreme','https://stockx.com/supreme/accessories/most-popular','https://stockx.com/supreme/accessories','https://stockx.com/supreme/headwear','https://stockx.com/supreme/headwear/most-popular','https://stockx.com/supreme/headwear/most-expensive','https://stockx.com/nike/air-max/most-popular','https://stockx.com/nike/air-max','https://stockx.com/other-sneakers/asics/most-popular','https://stockx.com/other-sneakers/asics/most-expensive','https://stockx.com/other-sneakers/asics','https://stockx.com/retro-jordans/price-premium','https://stockx.com/retro-jordans/recent-asks','https://stockx.com/retro-jordans/highest-bid','https://stockx.com/retro-jordans','https://stockx.com/adidas/nmd/lowest-ask','https://stockx.com/adidas/nmd/top-selling','https://stockx.com/adidas/nmd/price-premium','https://stockx.com/adidas/nmd/most-expensive','https://stockx.com/adidas/nmd/most-popular','https://stockx.com/adidas/nmd','https://stockx.com/adidas/ultra-boost/highest-bid','https://stockx.com/adidas/ultra-boost/price-premium','https://stockx.com/adidas/ultra-boost/most-popular','https://stockx.com/adidas/ultra-boost','https://stockx.com/adidas/yeezy','https://stockx.com/adidas/most-popular','https://stockx.com/nike/basketball','https://stockx.com/nike/footwear','https://stockx.com/nike/lebron','https://stockx.com/nike/air-force','https://stockx.com/nike/kobe','https://stockx.com/nike/foamposite','https://stockx.com/nike/sb','https://stockx.com/adidas','https://stockx.com/retro-jordans','https://stockx.com/retro-jordans/most-popular','https://stockx.com/nike','https://stockx.com/nike/most-popular','https://stockx.com/nike/top-selling','https://stockx.com/other-sneakers/most-popular']
+    #alist= ['https://stockx.com/palace/headwear','https://stockx.com/palace/accessories','https://stockx.com/palace/jackets','https://stockx.com/palace/tops/sweatshirts','https://stockx.com/palace/t-shirts','https://stockx.com/palace','https://stockx.com/bape/jackets','https://stockx.com/bape/bottoms','https://stockx.com/bape/accessories','https://stockx.com/bape/tops/sweatshirts/most-expensive','https://stockx.com/bape/tops/sweatshirts','https://stockx.com/bape/t-shirts','https://stockx.com/sneakers/most-popular','https://stockx.com/sneakers','https://stockx.com/supreme','https://stockx.com/adidas/most-popular','https://stockx.com/nike/basketball','https://stockx.com/nike/footwear','https://stockx.com/nike/lebron','https://stockx.com/nike/air-force','https://stockx.com/nike/kobe','https://stockx.com/nike/foamposite','https://stockx.com/nike/sb','https://stockx.com/adidas','https://stockx.com/retro-jordans','https://stockx.com/retro-jordans/most-popular','https://stockx.com/nike','https://stockx.com/nike/most-popular','https://stockx.com/nike/top-selling','https://stockx.com/other-sneakers/most-popular','https://stockx.com/supreme/accessories/most-popular','https://stockx.com/supreme/accessories','https://stockx.com/supreme/headwear','https://stockx.com/supreme/headwear/most-popular','https://stockx.com/supreme/headwear/most-expensive']
+    alist = ['https://stockx.com/sneakers/featured','https://stockx.com/palace/featured','https://stockx.com/supreme/featured','https://stockx.com/bape/featured','https://stockx.com/kith/featured']
+    #alist= ['https://stockx.com/retro-jordans/packs',https://stockx.com/sneakers/most-popular','https://stockx.com/retro-jordans/air-jordan-11','https://stockx.com/retro-jordans/air-jordan-11','https://stockx.com/retro-jordans/air-jordan-11/most-expensive','https://stockx.com/retro-jordans/air-jordan-12','https://stockx.com/retro-jordans/air-jordan-12/most-popular','https://stockx.com/retro-jordans/air-jordan-12/most-expensive','https://stockx.com/retro-jordans/air-jordan-12/top-selling','https://stockx.com/retro-jordans/air-jordan-13','https://stockx.com/retro-jordans/air-jordan-13/most-popular','https://stockx.com/retro-jordans/air-jordan-13/most-expensive','https://stockx.com/retro-jordans/air-jordan-14','https://stockx.com/retro-jordans/air-jordan-14/most-popular','https://stockx.com/retro-jordans/air-jordan-14/most-expensive','https://stockx.com/retro-jordans/air-jordan-15','https://stockx.com/retro-jordans/air-jordan-15/most-popular','https://stockx.com/retro-jordans/air-jordan-15/most-expensive','https://stockx.com/retro-jordans/air-jordan-16','https://stockx.com/retro-jordans/air-jordan-16/most-popular','https://stockx.com/retro-jordans/air-jordan-16/most-expensive','https://stockx.com/retro-jordans/air-jordan-16/top-selling','https://stockx.com/retro-jordans/air-jordan-17','https://stockx.com/retro-jordans/air-jordan-17/most-expensive','https://stockx.com/retro-jordans/air-jordan-18','https://stockx.com/retro-jordans/air-jordan-18/most-popular','https://stockx.com/retro-jordans/air-jordan-18/most-expensive','https://stockx.com/retro-jordans/air-jordan-19','https://stockx.com/retro-jordans/air-jordan-19/most-popular','https://stockx.com/retro-jordans/air-jordan-19/most-expensive','https://stockx.com/retro-jordans/air-jordan-20','https://stockx.com/retro-jordans/air-jordan-21','https://stockx.com/retro-jordans/air-jordan-22','https://stockx.com/retro-jordans/air-jordan-23','https://stockx.com/retro-jordans/air-jordan-23/most-popular','https://stockx.com/retro-jordans/air-jordan-23/price-premium','https://stockx.com/retro-jordans/air-jordan-28','https://stockx.com/retro-jordans/air-jordan-28/most-expensive','https://stockx.com/retro-jordans/air-jordan-29','https://stockx.com/retro-jordans/air-jordan-29/most-expensive','https://stockx.com/retro-jordans/air-jordan-30','https://stockx.com/retro-jordans/air-jordan-31','https://stockx.com/retro-jordans/air-jordan-31/most-expensive','https://stockx.com/adidas/iniki/most-expensive','https://stockx.com/kith/t-shirts/highest-bid','https://stockx.com/kith/t-shirts/lowest-ask','https://stockx.com/kith/t-shirts/price-premium','https://stockx.com/kith/t-shirts/most-expensive','https://stockx.com/kith/t-shirts/most-popular','https://stockx.com/kith/t-shirts','https://stockx.com/supreme/jackets/price-premium','https://stockx.com/kith/jackets','https://stockx.com/kith/bottoms/most-expensive','https://stockx.com/kith/bottoms','https://stockx.com/supreme/t-shirts/highest-bid','https://stockx.com/supreme/t-shirts/price-premium','https://stockx.com/supreme/t-shirts/top-selling','https://stockx.com/supreme/t-shirts/most-expensive','https://stockx.com/supreme/t-shirts/most-popular','https://stockx.com/supreme/t-shirts','https://stockx.com/supreme/bags/most-expensive','https://stockx.com/supreme/bags','https://stockx.com/supreme/sweatshirts/top-selling','https://stockx.com/supreme/sweatshirts/most-expensive','https://stockx.com/supreme/sweatshirts/price-premium','https://stockx.com/supreme/sweatshirts','https://stockx.com/supreme/jackets/most-expensive','https://stockx.com/supreme/jackets','https://stockx.com/supreme','https://stockx.com/supreme/accessories/most-popular','https://stockx.com/supreme/accessories','https://stockx.com/supreme/headwear','https://stockx.com/supreme/headwear/most-popular','https://stockx.com/supreme/headwear/most-expensive','https://stockx.com/nike/air-max/most-popular','https://stockx.com/nike/air-max','https://stockx.com/other-sneakers/asics/most-popular','https://stockx.com/other-sneakers/asics/most-expensive','https://stockx.com/other-sneakers/asics','https://stockx.com/retro-jordans/price-premium','https://stockx.com/retro-jordans/recent-asks','https://stockx.com/retro-jordans/highest-bid','https://stockx.com/retro-jordans','https://stockx.com/adidas/nmd/lowest-ask','https://stockx.com/adidas/nmd/top-selling','https://stockx.com/adidas/nmd/price-premium','https://stockx.com/adidas/nmd/most-expensive','https://stockx.com/adidas/nmd/most-popular','https://stockx.com/adidas/nmd','https://stockx.com/adidas/ultra-boost/highest-bid','https://stockx.com/adidas/ultra-boost/price-premium','https://stockx.com/adidas/ultra-boost/most-popular','https://stockx.com/adidas/ultra-boost','https://stockx.com/adidas/yeezy','https://stockx.com/adidas/most-popular','https://stockx.com/nike/basketball','https://stockx.com/nike/footwear','https://stockx.com/nike/lebron','https://stockx.com/nike/air-force','https://stockx.com/nike/kobe','https://stockx.com/nike/foamposite','https://stockx.com/nike/sb','https://stockx.com/adidas','https://stockx.com/retro-jordans','https://stockx.com/retro-jordans/most-popular','https://stockx.com/nike','https://stockx.com/nike/most-popular','https://stockx.com/nike/top-selling','https://stockx.com/other-sneakers/most-popular']
     #searchlist = ['https://stockx.com/search?s=supreme%20chicken%20dinner','https://stockx.com/search?s=nmd%20r1','https://stockx.com/search?s=nmd%20r2','https://stockx.com/search?s=ultraboost%204.0','https://stockx.com/search?s=ultraboost%203.0','https://stockx.com/search?s=ultraboost%201.0','https://stockx.com/search?s=ultraboost%202.0','https://stockx.com/search?s=supreme%20fire%20tee','https://stockx.com/search?s=supreme%20jelylfish','https://stockx.com/search?s=supreme%20independent','https://stockx.com/search?s=supreme%20small%20box%20tee%20pique','https://stockx.com/search?s=supreme%20small%20box%20tee%20shirt','https://stockx.com/search?s=supreme%20necklace%20tee','https://stockx.com/search?s=supreme%20scarface','https://stockx.com/search?s=supreme%20scarface%20split','https://stockx.com/search?s=supreme%20ftw%20tee%20shirt','https://stockx.com/search?s=supreme%20dollar','https://stockx.com/search?s=supreme%20undercover%20dolls','https://stockx.com/search?s=supreme%20arabic%206-panel','https://stockx.com/search?s=supreme%20arabic%20facemask','https://stockx.com/search?s=supreme%20arabic%20tee%20l/s','https://stockx.com/search?s=supreme%20arabic%20sweatshirt','https://stockx.com/search?s=supreme%20araki','https://stockx.com/search?s=supreme%20gonz%20crew','https://stockx.com/search?s=supreme%20gonz%20sweatshirt','https://stockx.com/search?s=supreme%20gonz%20butterfly%20tee%20shirt','https://stockx.com/search?s=supreme%20gonz%20tee%20shirt','https://stockx.com/search?s=supreme%20elephant%20tee%20shirt','https://stockx.com/search?s=supreme%20mike%20hill','https://stockx.com/search?s=supreme%20michael%20jackson','https://stockx.com/search?s=supreme%20nun','https://stockx.com/search?s=supreme%20nun','https://stockx.com/search?s=supreme%20anatomy','https://stockx.com/search?s=supreme%20akira%20syringe','https://stockx.com/search?s=supreme%20akira%20neo','https://stockx.com/search?s=supreme%20akira%20yamagata','https://stockx.com/search?s=supreme%20akira%20arm','https://stockx.com/search?s=supreme%20akira%20pill','https://stockx.com/search?s=supreme%20akira%20syringe','https://stockx.com/search?s=supreme%20sade','https://stockx.com/search?s=supreme%20betty%20tee%20shirt','https://stockx.com/search?s=supreme%20krs%20one%20shirt','https://stockx.com/search?s=supreme%20samurai','https://stockx.com/search?s=supreme%20neil%20%20tee%20shirt','https://stockx.com/search?s=supreme%20neil%20%20tee%20shirt','https://stockx.com/search?s=supreme%20neil%20%20tee%20shirt','https://stockx.com/search?s=supreme%20neil%20%20tee%20shirt','https://stockx.com/search?s=supreme%20neil%20%20tee%20shirt','https://stockx.com/search?s=supreme%20morissey%20tee%20shirt','https://stockx.com/search?s=supreme%20gucci%20mane%20tee%20shirt','https://stockx.com/search?s=supreme%20ali%20warhol','https://stockx.com/search?s=supreme%20sideline','https://stockx.com/search?s=prophere','https://stockx.com/search?s=supreme%20box%20logo%20crew','https://stockx.com/search?s=box%20logo%20sweatshirt','https://stockx.com/search?s=supreme%20box%20logo%20tee']
-    searchlist = ['https://stockx.com/search?s=balenciaga','https://stockx.com/search?s=balenciaga']
+    searchlist = ['https://stockx.com/search?s=supreme%20embossed%20hooded']
     newlist = []
     oldlist = []
-    # for url in alist:
-    #     driver = webdriver.Chrome()
-    #     driver.get(url)
-    #     #time.sleep(5)
-    #     htmlSource = driver.page_source
-    #     driver.close()
-
-    #     soup = BeautifulSoup(htmlSource,'html.parser')
-
-    #     links = soup.find_all("a",{"class":"tile browse-tile"})
-
-    #     for url in links:
-    #         handles = url.get("href")
-    #         newlist.append('https://stockx.com'+handles)
-    #         print('https://stockx.com'+handles)
-
-
-    for url in searchlist:
+    for url in alist:
         driver = webdriver.Chrome()
         driver.get(url)
         htmlSource = driver.page_source
         driver.close()
         soup = BeautifulSoup(htmlSource,'html.parser')
-        links = soup.find_all("div",{"class":"result-tile"})
+        links = soup.find_all("a",{"class":"tile browse-tile"})
         for url in links:
-            handles = str(url).split()[2].split('"')[1]
-            newlist.append('https://stockx.com/'+handles)
-            print('https://stockx.com/'+handles)
+            handles = url.get("href")
+            newlist.append('https://stockx.com'+handles)
+            print('https://stockx.com'+handles)
 
+    try:
+        for url in searchlist:
+            driver = webdriver.Chrome()
+            driver.get(url)
+            htmlSource = driver.page_source
+            driver.close()
+            soup = BeautifulSoup(htmlSource,'html.parser')
+            links = soup.find_all("div",{"class":"result-tile"})
+            for url in links:
+                handles = str(url).split()[2].split('"')[1]
+                newlist.append('https://stockx.com/'+handles)
+                print('https://stockx.com/'+handles)
+    except:
+        pass
     with open ('prodlist.csv','r') as fin:
         reader = csv.reader(fin)
         for line in reader:
@@ -124,13 +87,13 @@ def openfile(filename):
                 pass
             else:
                 prodlist.append(a[0])
-        # a= ''.join(prodlist)
+
     with open('prodlist.csv','w') as fout:
         csvwriter = csv.writer(fout)
         csvwriter.writerow(prodlist)
 
 def roundup(x): #math rounding
-    return int(math.ceil(x / 10000.0)) * 10000
+    return int(math.ceil(x / 100000.0)) * 100000
 
 
 #Request all links.
@@ -159,13 +122,13 @@ async def run(r):
     percentage = (len(htmllist)*100)/num
     print(f"{datetime.now()}..... Total task working: {len(htmllist)}, %{percentage}")
 
-        # you now have all response bodies in this variable
+
 
 def format1():
 
     with open ('instock.json','r') as fin:
         jsondata = json.load(fin)
-    #NEW
+
     with open("imagelibrary.json", 'w') as fout:
         jsondata2 = json.dumps(imgdict,indent = 4)
         json.dump(jsondata2,fout)
@@ -180,9 +143,8 @@ def format1():
             for item in g_data:
                 g_size = item.contents[0].find_all("div", {"class": "inset"})
             name = g_name.text.split()
-            bogo =0
-            if 'Box' and 'Supreme' in name:
-                bogo = 1
+
+
             taginput = ','.join(name)
             handleinput = '-'.join(name).lower()
             g_sku = soup.find_all("div",{"class":{"detail"}})
@@ -203,7 +165,7 @@ def format1():
             except:
                 pass
 
-            bodylist.append('<meta charset="utf-8"> <div class="title"> <meta charset="utf-8"> <div class="Trust__container__3bA3U" data-reactid="115"> <div class="Trust__image-container__3yIDD" data-reactid="116"><img src="https://www.goat.com/images/products/icon_verification@2x.png" width="30" height="30" class="Trust__image__3gb_e" data-reactid="117"></div> <div class="Trust__title__3cC5B" data-reactid="118"><strong>1000% AUTHENTIC</strong></div> <div class="Trust__desc__32B5p" data-reactid="119"> <p class="p1">Semua sneaker dari VTL melewati LEGIT CHECK oleh tim profesional untuk memastikan keaslian sneaker tersebut.</p> <p class="p1"> </p> </div> </div> <div class="Trust__container__3bA3U" data-reactid="120"> <div class="Trust__image-container__3yIDD" data-reactid="121"><img src="https://www.goat.com/images/products/icon_return@2x.png" width="30" height="30" class="Trust__image__3gb_e" data-reactid="122"></div> <div class="Trust__title__3cC5B" data-reactid="123"><strong>RETURNS</strong></div> <div class="Trust__desc__32B5p" data-reactid="124">Kami menerima pengembalian barang pada Brand New sneakers yang tetap dalam kondisi yang sama seperti yang dikirim. Kami akan memberikan <em>refund</em> untuk jumlah yang telah dibayar (di kurang biaya pengiriman) dalam bentuk <em>store credit</em>. Mohon hubungi kami untuk info lebih lanjut.</div> </div> </div>')
+            bodylist.append('<meta charset="utf-8"> <div class="title"> <meta charset="utf-8"> <div class="Trust__container__3bA3U" data-reactid="115"><strong>SIZING</strong></div><div class="Trust__image-container__3yIDD" data-reactid="116">Untuk info sizing dapat di cek <span style="text-decoration: underline;"><a href="https://vtlstore.com/pages/sizing-chart" target="_blank" title="Size Guide" rel="noopener noreferrer">disini</a>.</span></div> <div class="Trust__image-container__3yIDD" data-reactid="116"><img src="https://www.goat.com/images/products/icon_verification@2x.png" width="30" height="30" class="Trust__image__3gb_e" data-reactid="117"></div> <div class="Trust__title__3cC5B" data-reactid="118"><strong>1000% AUTHENTIC</strong></div> <div class="Trust__desc__32B5p" data-reactid="119"> <p class="p1">Semua product dari VTL melewati LEGIT CHECK oleh tim profesional untuk memastikan keaslian product tersebut.</p> <p class="p1"> </p> </div> </div> <div class="Trust__container__3bA3U" data-reactid="120"> <div class="Trust__image-container__3yIDD" data-reactid="121"><img src="https://www.goat.com/images/products/icon_return@2x.png" width="30" height="30" class="Trust__image__3gb_e" data-reactid="122"></div> <div class="Trust__title__3cC5B" data-reactid="123"><strong>RETURNS</strong></div> <div class="Trust__desc__32B5p" data-reactid="124">Kami menerima pengembalian barang pada untuk Brand New sneakers (non PO) yang tetap dalam kondisi yang sama seperti yang dikirim. Kami akan memberikan <em>refund</em> untuk jumlah yang telah dibayar (di kurang biaya pengiriman) dalam bentuk <em>store credit</em>. Mohon <span style="text-decoration: underline;"><a href = https://vtlstore.com/pages/about-us"> hubungi kami </a></span> atau <span style="text-decoration: underline;"><a href = "https://vtlstore.com/apps/help-center#!returns"> click disini</a></span untuk info lebih lanjut.</div> </div> </div>')
             vendorlist.append('Vendor')
             publishlist.append('TRUE')
             option1name.append('Size')
@@ -224,8 +186,40 @@ def format1():
                 taginput = ','.join(name)+','+sku.strip()+',ready'
             else:
                 taginput = ','.join(name)+','+sku.strip()
+
+            #adding tags
+            bogo =0
+            jordan = 0
+            tee = 0
+            undftd = 0
+            if 'Box' and 'Supreme' in name:
+                bogo = 1
+            if 'Jordan' in name:
+                jordan = 1
+            if 'Tee' in name:
+                tee = 1
+            if 'UNDFTD' in name:
+                undftd = 1
+            longsleeve = len(set(['L/S','Longsleeve']).intersection(name))
+            hoodie = len(set(['crewneck','hood','crew']).intersection(name))
+            pants = len(set(['trackpants','shorts','joggers','pant','leggings','sweatshorts','sweatpants']).intersection(name))
+            hat = len(set(['6-panel','4-panel','beanie','7-panel']).intersection(name))
             if bogo >0:
                 taginput = taginput+',bogo'
+            if jordan >0:
+                taginput = taginput+',air'
+            if tee >0:
+                taginput = taginput+',t,t-shirt,t-,shirt'
+            if undftd >0:
+                taginput = taginput+',undefeated'
+            if longsleeve >0:
+                taginput = taginput+',longsleeve'+',long'+',sleeve'+',tee'
+            if hoodie >0:
+                taginput = taginput+',hoodie'+',jaket'+',hood'
+            if pants >0:
+                taginput = taginput+',pants'+',bottoms'
+            if hat >0:
+                taginput = taginput+',hat'
             taglist.append(taginput)
 
 
@@ -234,13 +228,13 @@ def format1():
 
         #Data list
             print(f"{datetime.now()}..... Formatting CSV file")
+            usd2idr = 14500
             if g_check[0].text != '$--':
                 if g_size != []:
                     for result in g_size:
                         size = result.contents[0].text
                         price = result.contents[1].text.replace('$','')
                         price = ''.join(price)
-
                         if price != 'Bid' and size != "All" and price != '' and size != '': #excludes empty price and "all" size entry
                             try:
                                 size = ''.join(size)
@@ -250,10 +244,53 @@ def format1():
                                 ussize = ""
                             sizelist.append(ussize)
                             lendictval+=1
+                            print(f"{datetime.now()}.....    {price}")
+                            if int(price) > 10000:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.05*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
+                            if int(price) > 7000:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.055*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
+                            if int(price) > 5000:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.07*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
+                            if int(price) > 2000:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.075*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
+                            if int(price) > 1500:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.080*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
+                            if int(price) > 1000:
+                                try:
+                                    price = int(price)
+                                    idr = (price+55)*1.085*usd2idr #format price + formula
+                                    idr = roundup(idr)
+                                except:
+                                    idr = ""
                             if int(price) > 500:
                                 try:
                                     price = int(price)
-                                    idr = (price+45)*1.08*13800 #format price + formula
+                                    idr = (price+55)*1.085*usd2idr #format price + formula
                                     idr = roundup(idr)
 
                                 except:
@@ -261,7 +298,7 @@ def format1():
                             elif int(price)>300:
                                 try:
                                     price = int(price)
-                                    idr = (price+45)*1.09*13800 #format price + formula
+                                    idr = (price+55)*1.085*usd2idr #format price + formula
                                     idr = roundup(idr)
 
                                 except:
@@ -269,7 +306,7 @@ def format1():
                             elif int(price)>200:
                                 try:
                                     price = int(price)
-                                    idr = (price+45)*1.1*13800 #format price + formula
+                                    idr = (price+55+40)*usd2idr #format price + formula
                                     idr = roundup(idr)
 
                                 except:
@@ -277,7 +314,7 @@ def format1():
                             elif int(price)>100:
                                 try:
                                     price = int(price)
-                                    idr = (price+45)*1.1*13800 #format price + formula
+                                    idr = (price+55+40)*usd2idr #format price + formula
                                     idr = roundup(idr)
 
                                 except:
@@ -285,11 +322,12 @@ def format1():
                             else:
                                 try:
                                     price = int(price)
-                                    idr = (price+55)*1.1*13800 #format price + formula
+                                    idr = (price+55+40)*usd2idr #format price + formula
                                     idr = roundup(idr)
 
                                 except:
                                     idr = ""
+                            print(f"{datetime.now()}.....    {idr}")
                             pricelist.append(idr)
                             variantgrams.append('2000')
                             varianttrack.append('shopify')
@@ -301,18 +339,103 @@ def format1():
                             variantweight.append('kg')
                 else:
                     g_price = soup.find_all("div", {"class": "stat-value stat-small"})
-                    price = int(g_price[0].text.replace('$',''))*13800*1.1
-                    lendictval+=1
+                    price = (int(g_price[0].text.replace('$','')))
                     sizelist.append("(PO) One Size")
-                    pricelist.append(price)
-                    variantgrams.append('2000')
-                    varianttrack.append('shopify')
-                    variantqty.append('1')
-                    variantpolicy.append('deny')
-                    variantfull.append('manual')
-                    variantreq.append('TRUE')
-                    varianttax.append('FALSE')
-                    variantweight.append('kg')
+                    if price != 'Bid' and size != "All" and price != '' and size != '' and price < 9999: #excludes empty price and "all" size entry
+                        lendictval+=1
+                        print(f"{datetime.now()}.....    {price}")
+                        if int(price) > 10000:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.05*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 7000:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.055*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 5000:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.07*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 2000:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.075*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 1500:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.080*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 1000:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.085*usd2idr #format price + formula
+                                idr = roundup(idr)
+                            except:
+                                idr = ""
+                        if int(price) > 500:
+                            try:
+                                price = int(price)
+                                idr = (price+55)*1.085*usd2idr #format price + formula
+                                idr = roundup(idr)
+
+                            except:
+                                idr = ""
+                        elif int(price)>300:
+                            try:
+                                price = int(price)
+                                idr = (price+55+40)*usd2idr #format price + formula
+                                idr = roundup(idr)
+
+                            except:
+                                idr = ""
+                        elif int(price)>200:
+                            try:
+                                price = int(price)
+                                idr = (price+55+40)*usd2idr #format price + formula
+                                idr = roundup(idr)
+
+                            except:
+                                idr = ""
+                        elif int(price)>100:
+                            try:
+                                price = int(price)
+                                idr = (price+55+40)*usd2idr #format price + formula
+                                idr = roundup(idr)
+
+                            except:
+                                idr = ""
+                        else:
+                            try:
+                                price = int(price)
+                                idr = (price+55+40)*usd2idr #format price + formula
+                                idr = roundup(idr)
+
+                            except:
+                                idr = ""
+                        print(f"{datetime.now()}.....    {idr}")
+                        pricelist.append(idr)
+                        variantgrams.append('2000')
+                        varianttrack.append('shopify')
+                        variantqty.append('1')
+                        variantpolicy.append('deny')
+                        variantfull.append('manual')
+                        variantreq.append('TRUE')
+                        varianttax.append('FALSE')
+                        variantweight.append('kg')
             else:
                 print("HEREE")
 
@@ -458,7 +581,6 @@ async def fetchimg(r):
                     stockxdict[namekey[i]] = str(g_link.contents).split('"')[-2]
                 else:
                     stockxdict[namekey[i]] = 'http://nptel.ac.in/LocalChapter/Assets/college_logo/dummy_logo.png'
-        print(f"printing stockx img urls{stockxdict[namekey[i]]}")
     for entry in stockxdict.keys():
         print(entry)
     print(f"{datetime.now()}..... Success made html list line 338")
@@ -582,41 +704,116 @@ def cleanupfile():
         csvwriter = csv.writer(fout)
         csvwriter.writerow(prodlist)
 
+def upload():
+    driver = webdriver.Chrome()
+    driver.get("https://vtl-sneakers.myshopify.com/admin/products")
+
+
+
+    inputElement = driver.find_element_by_name('login').send_keys('ossneakers@gmail.com')
+    pwElement = driver.find_element_by_name('password').send_keys('890590Swd!')
+    time.sleep(5)
+    driver.find_element_by_xpath("//button[@type='submit']").click()
+    time.sleep(5)
+    driver.find_element_by_xpath("//button[@class='ui-button ui-button--transparent action-bar__link'][@data-popover-index='2']").click()
+    time.sleep(3)
+    driver.find_element_by_id('csv_input_field').send_keys(r'C:\Users\ASUS\Desktop\scrape\export.csv')
+    driver.find_element_by_id('overwrite_existing_products').click()
+    driver.find_element_by_id('upload-file-btn').click()
+    time.sleep(10)
+    driver.find_element_by_xpath("//a[@class='btn btn-primary']").click()
+    time.sleep(60)
+    driver.close()
+def csv2json():
+    with open('instock.csv','r') as fin:
+        reader = csv.reader(fin)
+        x = []
+        alldict = {}
+        for line in reader:
+            x.append(line)
+        for line in x[0:]:
+            if line[0] in alldict.keys():
+                alldict[line[0]].append({'size': line[1], 'price': line[2], 'quantity': line[3]})
+            else:
+                alldict[line[0]] = [{'size': line[1], 'price': line[2], 'quantity': line[3]}]
+
+    with open('instock.json','w') as fout:
+        json.dump(alldict,fout, indent = 4)
 
 if __name__ == '__main__':
     while True:
-        print(f"{datetime.now()}..... Starting program")
-        startTime = datetime.now()
-        #geturl()
-        with open('prodlist.csv','r') as fin:
-            csvreader = csv.reader (fin,delimiter =',')
-            for line in csvreader:
-                for entry in line :
-                    #print("Getting image URL")
-                    if entry != '':
-                        if entry not in urllist:
-                            urllist.append(entry)
-        urllist = sorted(urllist)
-        for entry in urllist:
-            print(entry)
-        with open('export.csv','w',newline = '') as fout:
-            writer = csv.writer(fout)
-            writer.writerow(['Handle', 'Title', 'Body (HTML)', 'Vendor', 'Type', 'Tags', 'Published', 'Option1 Name', 'Option1 Value', 'Option2 Name', 'Option2 Value', 'Option3 Name', 'Option3 Value', 'Variant SKU', 'Variant Grams', 'Variant Inventory Tracker', 'Variant Inventory Qty', 'Variant Inventory Policy', 'Variant Fullfilment Service', 'Variant Price', 'Variant Compare', 'Variant Requires Shipping', 'Variant Taxable', 'Variant Barcode', 'Image Src', 'Image Position', 'Image Alt Text', 'Gift Card', 'SEO Title', 'SEO Description', 'Google Shopping / Google Product Category', 'Google Shopping / Gender', 'Google Shopping / Age Group', 'Google Shopping / MPN', 'Google Shopping / AdWords Grouping', 'Google Shopping / AdWords Labels', 'Google Shopping / Condition', 'Google Shopping / Custom Product', 'Google Shopping / Custom Label 0', 'Google Shopping / Custom Label 1', 'Google Shopping / Custom Label 2', 'Google Shopping / Custom Label 3', 'Google Shopping / Custom Label 4', 'Variant Image', 'Variant Weight Unit', 'Variant Tax Code'])
+        try:
+            urllist = []
+            skulist = []
+            imglist = []
+            imgpos = []
+            stockximg = []
+            namekey = []
+            sizelist = []
+            pricelist = []
+            emptylist = []
+            bodylist = [ ]
+            vendorlist = []
+            publishlist = []
+            option1name = []
+            variantgrams = []
+            varianttrack = []
+            variantqty = [ ]
+            variantpolicy = []
+            variantfull = []
+            variantreq = []
+            varianttax = []
+            variantweight = []
+            giftcardlist = []
+            handlelist = []
+            titlelist = []
+            taglist = []
+            lendict = {}
+            htmllist = []
+            imgdict = {}
+            sghtml = []
+            stockxdict = {}
+            print(f"{datetime.now()}..... Starting program")
+            startTime = datetime.now()
+            #geturl()
+            csv2json()
+            with open('prodlist.csv','r') as fin:
+                csvreader = csv.reader (fin,delimiter =',')
+                for line in csvreader:
+                    for entry in line :
+                        #print("Getting image URL")
+                        if entry != '':
+                            if entry not in urllist:
+                                urllist.append(entry)
+            urllist = sorted(urllist)
+            for entry in urllist:
+                print(entry)
+            with open('export.csv','w',newline = '') as fout:
+                writer = csv.writer(fout)
+                writer.writerow(['Handle', 'Title', 'Body (HTML)', 'Vendor', 'Type', 'Tags', 'Published', 'Option1 Name', 'Option1 Value', 'Option2 Name', 'Option2 Value', 'Option3 Name', 'Option3 Value', 'Variant SKU', 'Variant Grams', 'Variant Inventory Tracker', 'Variant Inventory Qty', 'Variant Inventory Policy', 'Variant Fullfilment Service', 'Variant Price', 'Variant Compare', 'Variant Requires Shipping', 'Variant Taxable', 'Variant Barcode', 'Image Src', 'Image Position', 'Image Alt Text', 'Gift Card', 'SEO Title', 'SEO Description', 'Google Shopping / Google Product Category', 'Google Shopping / Gender', 'Google Shopping / Age Group', 'Google Shopping / MPN', 'Google Shopping / AdWords Grouping', 'Google Shopping / AdWords Labels', 'Google Shopping / Condition', 'Google Shopping / Custom Product', 'Google Shopping / Custom Label 0', 'Google Shopping / Custom Label 1', 'Google Shopping / Custom Label 2', 'Google Shopping / Custom Label 3', 'Google Shopping / Custom Label 4', 'Variant Image', 'Variant Weight Unit', 'Variant Tax Code'])
 
-        loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(run(len(urllist)))
-        print(f"{datetime.now()}..... Getting Stockx data")
-        loop.run_until_complete(future)
-        print(f"{datetime.now()}.....Getting img urls")
-        loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(fetchimg(len(htmllist)))
-        loop.run_until_complete(future)
-        format1()
-        export()
-        print("\007")
-        print(f"Finished in {datetime.now() - startTime}")
-        print(f"{datetime.now()}..... Done")
-        time.sleep(21600)
+            loop = asyncio.get_event_loop()
+            future = asyncio.ensure_future(run(len(urllist)))
+            print(f"{datetime.now()}..... Getting Stockx data")
+            loop.run_until_complete(future)
+            print(f"{datetime.now()}.....Getting img urls")
+            loop = asyncio.get_event_loop()
+            future = asyncio.ensure_future(fetchimg(len(htmllist)))
+            loop.run_until_complete(future)
+            format1()
+            export()
+            print("\007")
+            print(f"Finished in {datetime.now() - startTime}")
+            print(f"{datetime.now()}..... Done")
+
+
+            try:
+                upload()
+            except:
+                pass
+            time.sleep(10000)
+        except:
+            pass
 
 
 
